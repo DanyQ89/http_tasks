@@ -8,8 +8,6 @@ from PyQt5.Qt import QMainWindow, QApplication, QPixmap, QButtonGroup
 
 def get_img(name_func, spn_func, map_func, coord_1_func, coord_2_func, metki_func, take_func, need_postal_code_func,
             move_func=False):
-    # print(name_func, spn_func, coord_1_func, coord_2_func, metki_func, take_func)
-
     url = 'http://geocode-maps.yandex.ru/1.x/'
     api_key = '40d1649f-0493-4b70-98ba-98533de7710b'
     params = {
@@ -18,32 +16,31 @@ def get_img(name_func, spn_func, map_func, coord_1_func, coord_2_func, metki_fun
         'format': 'json'
     }
     res = requests.get(url, params=params).json()
-    # pprint.pprint(res)
-
     need = \
         res['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty']['GeocoderMetaData'][
             'Address']
     full_address_func = need['formatted']
-    if need_postal_code_func and need['postal_code']:
-        post_index_func = need['postal_code']
+
+    if need_postal_code_func:
+        try:
+            post_index_func = need['postal_code']
+        except Exception:
+            post_index_func = 'Отсутствует'
     else:
         post_index_func = 'Отсутствует'
+
     if not move_func:
         coord_1, coord_2 = [float(i) for i in
                             res['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point'][
                                 'pos'].split()]
     else:
         coord_1, coord_2 = coord_1_func, coord_2_func
-
     if take_func:
         m = f'{coord_1},{coord_2}'
         if m not in metki_func:
             metki_func.append(m)
 
-    # print(full_address_func, post_index_func)
     url_map = 'http://static-maps.yandex.ru/1.x/'
-    print(coord_1, coord_2, spn_func, metki_func)
-
     params_map = {
         'l': map_func,
         'll': f'{coord_1},{coord_2}',
@@ -51,13 +48,31 @@ def get_img(name_func, spn_func, map_func, coord_1_func, coord_2_func, metki_fun
         'pt': '~'.join(metki_func),
         'size': f'391,391'
     }
-
     img = requests.get(url_map, params=params_map).content
-    #
+
     with open('img.txt', 'wb') as file:
         file.write(img)
-    print(coord_1, coord_2, metki_func, full_address_func, post_index_func)
     return coord_1, coord_2, metki_func, full_address_func, post_index_func
+
+
+def is_address_good(address):
+    if not address:
+        return False
+    try:
+        url = 'http://geocode-maps.yandex.ru/1.x/'
+        api_key = '40d1649f-0493-4b70-98ba-98533de7710b'
+        params = {
+            'apikey': api_key,
+            'geocode': address,
+            'format': 'json'
+        }
+        res = requests.get(url, params=params).json()
+        if res['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']:
+            return True
+        return False
+
+    except Exception:
+        return False
 
 
 class Map(QMainWindow):
@@ -94,7 +109,7 @@ class Map(QMainWindow):
                     self.address = self.address_text.toPlainText()
             except (ValueError, TypeError):
                 pass
-        
+
         if map_text == '':
             self.map = 'map'
         # elif map_text == 'гибрид':
@@ -103,19 +118,15 @@ class Map(QMainWindow):
         #     self.map = 'satellite'
         else:
             self.map = 'map'
-
         self.coord_1, self.coord_2, self.metki_all, self.full_address, self.post_index = get_img(self.address, self.spn,
+
                                                                                                  self.map, self.coord_1,
                                                                                                  self.coord_2,
                                                                                                  self.metki_all,
                                                                                                  take, need_postal_code,
                                                                                                  move)
-        print(self.full_address)
-
         self.address = self.full_address
-        print(5)
         self.label_for_map.setPixmap(QPixmap('img.txt'))
-        print(6)
 
     def keyPressEvent(self, e):
         arr = [16777238, 16777239, 16777235, 16777237, 'right_button', 'left_button']
@@ -142,15 +153,16 @@ class Map(QMainWindow):
 
             self.show_map(take=True, move=True)
 
-    def reset(self):
-        self.line_spn.setText('')
-        self.address = self.address_text.toPlainText()
-        self.address_text.setPlainText('')
-        self.radio_map.setChecked(True)
-        find_address(self.metki_all[-1])
-
     def run_display(self):
         self.textEdit_for_address.setPlainText(f'Полный адрес: {self.full_address}\nПочтовый индекс: {self.post_index}')
+
+    def test_func(self):
+        text = self.address_text.toPlainText()
+        if len(text) > 5:
+            if is_address_good(text):
+                self.address = text
+                self.show_map(True, False)
+                self.run_display()
 
     def initUI(self):
         self.line_spn.setText(str(self.spn))
@@ -158,9 +170,29 @@ class Map(QMainWindow):
         self.label_for_map.setText('')
         self.radio_map.setChecked(True)
         self.checkBox_post.setChecked(True)
-        self.main_button.clicked.connect(partial(self.show_map, True))
+        self.main_button.clicked.connect(partial(self.show_map, True, False))
         self.main_button.clicked.connect(self.run_display)
-        self.end_button.clicked.connect(partial(self.show_map, False))
+        self.end_button.clicked.connect(partial(self.show_map, False, False))
+        self.address_text.textChanged.connect(self.test_func)
+
+    def mousePressEvent(self, e):
+        x, y = e.pos().x(), e.pos().y()
+
+        if 10 <= x <= 391 + 10 and 20 <= y <= 391 + 20:
+            half = 391 / 2
+            num = self.spn + 0
+            if x > half:
+                self.coord_1 += abs(x - half) / half * num
+            else:
+                self.coord_1 -= abs(x - half) / half * num
+            if y > half:
+                self.coord_2 -= abs(y - half) / half * num
+            else:
+                self.coord_2 += abs(y - half) / half * num
+
+            self.address = f'{self.coord_1},{self.coord_2}'
+            self.show_map(True, True)
+            self.run_display()
 
 
 if __name__ == '__main__':
