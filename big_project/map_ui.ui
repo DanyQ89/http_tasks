@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>624</width>
-    <height>600</height>
+    <width>769</width>
+    <height>639</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,43 +19,30 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>381</width>
+      <width>391</width>
       <height>391</height>
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string/>
     </property>
    </widget>
-   <widget class="QLineEdit" name="line_spn">
+   <widget class="QTextEdit" name="textEdit_for_address">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>60</y>
-      <width>81</width>
-      <height>21</height>
+      <x>30</x>
+      <y>420</y>
+      <width>271</width>
+      <height>121</height>
      </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>420</x>
-      <y>30</y>
-      <width>47</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Масштаб:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>490</x>
-      <y>60</y>
-      <width>21</width>
+      <x>600</x>
+      <y>30</y>
+      <width>51</width>
       <height>16</height>
      </rect>
     </property>
@@ -63,72 +50,81 @@
      <string>К 1</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="main_button">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>240</y>
-      <width>161</width>
-      <height>81</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Показать карту</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QWidget" name="formLayoutWidget">
     <property name="geometry">
      <rect>
       <x>420</x>
-      <y>130</y>
-      <width>47</width>
-      <height>16</height>
+      <y>30</y>
+      <width>341</width>
+      <height>541</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Адрес:</string>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="address_text">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>150</y>
-      <width>151</width>
-      <height>51</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QWidget" name="verticalLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>370</y>
-      <width>151</width>
-      <height>111</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="radio_group">
-     <item>
-      <widget class="QRadioButton" name="radio_map">
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="line_spn"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Схема</string>
+        <string>Адрес:</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QRadioButton" name="radio_sputnik">
+     <item row="1" column="1">
+      <widget class="QTextEdit" name="address_text"/>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>Спутник</string>
+        <string>Масштаб:</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QRadioButton" name="radio_hybrid">
+     <item row="3" column="0" colspan="2">
+      <widget class="QPushButton" name="end_button">
        <property name="text">
-        <string>Гибрид</string>
+        <string>Сброс</string>
        </property>
       </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QPushButton" name="main_button">
+       <property name="text">
+        <string>Показать карту</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <layout class="QVBoxLayout" name="radio_group">
+       <item>
+        <widget class="QRadioButton" name="radio_map">
+         <property name="text">
+          <string>Схема</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radio_sputnik">
+         <property name="text">
+          <string>Спутник</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radio_hybrid">
+         <property name="text">
+          <string>Гибрид</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox_post">
+         <property name="text">
+          <string>Почта</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
@@ -138,7 +134,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>624</width>
+     <width>769</width>
      <height>21</height>
     </rect>
    </property>
